@@ -1,7 +1,7 @@
 import 'tsconfig-paths/register';
 import express, { Application, Request, Response } from 'express';
 import dotenv from 'dotenv';
-import movieRoutes from '@/infrastructure/api/routes/movieRoutes';
+import movieRoutes from '@/infrastructure/api/routes';
 
 dotenv.config();  // Load environment variables
 
@@ -14,7 +14,7 @@ app.use(express.json());  // Parse JSON request bodies
  * Headers configuration
  */
 app.use((req, res, next) => {
-    res.header('Access-Control-Allow-Origin', process.env.CLIENT_URL); // Update to match the domain you will make the request from
+    res.header('Access-Control-Allow-Origin', process.env.CLIENT_URL);
     res.header(
         'Access-Control-Allow-Headers',
         'Origin, X-Requested-With, Content-Type, Accept'
