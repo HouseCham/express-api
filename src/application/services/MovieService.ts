@@ -1,30 +1,120 @@
-
-import { Movie } from '@/src//domain/entities/Movie';
-import { MovieRepository } from '@/src//domain/repositories/movie.repo';
+import { Movie } from "@/domain/entities/Movie";
+import { HttpCodes } from "@/domain/enums/httpCodes";
+import IHttpResponse from "@/domain/interfaces/IHttpResponse";
+import { MovieRepository } from "@/domain/repositories/movie.repo";
 /**
  * @class MovieService
  * @description Service for Movie entity
  */
 export class MovieService {
   private movieRepository = new MovieRepository();
-
-  async createMovie(data: Movie) {
-    return this.movieRepository.create(data);
+  /**
+   * Service to create a movie
+   * @param {Movie} data - Movie data
+   * @returns {Promise<IHttpResponse<Movie>>}
+   */
+  async createMovie(data: Movie): Promise<IHttpResponse<Movie>> {
+    const movie = await this.movieRepository.create(data);
+    const response: IHttpResponse<Movie> = {
+      status: HttpCodes.CREATED,
+      message: 'Movie created successfully',
+      data: movie,
+    };
+    return response;
   }
-
-  async updateMovie(id: number, data: Partial<Movie>) {
-    return this.movieRepository.update(id, data);
+  /**
+   * Service to update a movie
+   * @param {number} id - Movie id
+   * @param {Partial<Movie>} data - Movie data
+   * @returns {Promise<IHttpResponse<Movie | null>>}
+   */
+  async updateMovie(id: number, data: Partial<Movie>): Promise<IHttpResponse<Movie | null>> {
+    const movie = await this.movieRepository.findById(id);
+    if (!movie) {
+      const response: IHttpResponse<null> = {
+        status: HttpCodes.NOT_FOUND,
+        message: 'Movie not found',
+        data: null,
+      };
+      return response;
+    }
+    // update the movie
+    const movieUpdated = await this.movieRepository.update(id, data);
+    const response: IHttpResponse<Movie> = {
+      status: movieUpdated ? HttpCodes.OK : HttpCodes.INTERNAL_SERVER_ERROR,
+      message: movieUpdated ? 'Movie updated successfully' : 'Error updating movie',
+      data: movie,
+    };
+    return response;
   }
-
-  async deleteMovie(id: number) {
-    return this.movieRepository.delete(id);
+  /**
+   * Service to delete a movie
+   * @param {number} id - Movie id
+   * @returns {Promise<IHttpResponse<null>>}
+   * @description This method updates the deletedAt field of the movie
+   */
+  async deleteMovie(id: number): Promise<IHttpResponse<null>> {
+    // find the movie by id
+    const movie = await this.movieRepository.findById(id);
+    if (!movie) {
+      const response: IHttpResponse<null> = {
+        status: HttpCodes.NOT_FOUND,
+        message: 'Movie not found',
+        data: null,
+      };
+      return response;
+    }
+    // update deletedAt field
+    const deleted = await this.movieRepository.delete(id);
+    if (!deleted) {
+      const response: IHttpResponse<null> = {
+        status: HttpCodes.INTERNAL_SERVER_ERROR,
+        message: 'Error deleting movie',
+        data: null,
+      };
+      return response;
+    }
+    const response: IHttpResponse<null> = {
+      status: HttpCodes.OK,
+      message: 'Movie deleted successfully',
+      data: null,
+    };
+    return response;
   }
-
-  async getMovieById(id: number) {
-    return this.movieRepository.findById(id);
+  /**
+   * Service to get a movie by id
+   * @param {number} id - Movie id
+   * @returns {Promise<IHttpResponse<Movie | null>>}
+   */
+  async getMovieById(id: number): Promise<IHttpResponse<Movie | null>> {
+    const movie = await this.movieRepository.findById(id);
+    if (!movie) {
+      const response: IHttpResponse<null> = {
+        status: HttpCodes.NOT_FOUND,
+        message: 'Movie not found',
+        data: null,
+      };
+      return response;
+    }
+    const response: IHttpResponse<Movie> = {
+      status: HttpCodes.OK,
+      message: 'Movie retrieved successfully',
+      data: movie,
+    };
+    return response;
   }
-
-  async listMovies() {
-    return this.movieRepository.findAll();
+  /**
+   * Service to list all movies
+   * @returns {Promise<IHttpResponse<Movie[]>>}
+   * @description This method retrieves all movies from the database
+   */
+  public async listMovies(): Promise<IHttpResponse<Movie[]>> {
+    const movies = await this.movieRepository.findAll();
+    const response: IHttpResponse<Movie[]> = {
+      status: HttpCodes.OK,
+      message: movies.length > 0 ? 'Movies retrieved successfully' : 'No movies found',
+      data: movies,
+    };
+    return response;
   }
 }

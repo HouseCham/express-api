@@ -1,13 +1,15 @@
 import { Router } from 'express';
-import { createMovie, getAllMovies, getMovieById, updateMovie, deleteMovie } from '@/infrastructure/api/controllers/movieController';
 import { validateSchema } from '@/infrastructure/middleware/validate';
 import { movieSchema } from '@/infrastructure/validation/movieSchema';
+import MovieController from '@/infrastructure/api/controllers/movieController';
 
 const router = Router();
-router.get('/', getAllMovies);
-router.get('/:id', getMovieById);
-router.post('/', validateSchema(movieSchema), createMovie);
-router.put('/', validateSchema(movieSchema), updateMovie);
-router.delete('/:id', deleteMovie);
+// -- Movie routes
+const { getAllMovies, getMovieById, createMovie, updateMovie, deleteMovie } = new MovieController();
+router.get('/movies', getAllMovies);
+router.get('/movies/:id', getMovieById);
+router.post('/movies', validateSchema(movieSchema), createMovie);
+router.put('/movies', validateSchema(movieSchema), updateMovie);
+router.delete('/movies/:id', deleteMovie);
 
 export default router;

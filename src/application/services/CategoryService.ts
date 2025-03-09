@@ -1,5 +1,6 @@
-import { Category } from "@/src/domain/entities/Category";
-import { CategoryRepository } from "@/src/domain/repositories/category.repo";
+import { Category } from "@/domain/entities/Category";
+import { CategoryRepository } from "@/domain/repositories/category.repo";
+
 /**
  * @class CategoryService
  * @description Service for Category entity

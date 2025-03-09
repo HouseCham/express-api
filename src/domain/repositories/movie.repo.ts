@@ -20,8 +20,12 @@ export class MovieRepository implements IBaseModel<Movie> {
   }
 
   async delete(id: number): Promise<boolean> {
-    const deleted = await Movie.destroy({ where: { id } });
-    return deleted > 0;
+    const movie = await Movie.findByPk(id);
+    if (movie) {
+      await movie.update({ deletedAt: new Date() });
+      return true;
+    }
+    return false;
   }
 
   async findById(id: number): Promise<Movie | null> {

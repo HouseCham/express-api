@@ -1,7 +1,7 @@
 import 'tsconfig-paths/register';
 import express, { Application, Request, Response } from 'express';
 import dotenv from 'dotenv';
-import movieRoutes from '@/infrastructure/api/routes';
+import apiRoutes from '@/infrastructure/api/routes';
 
 dotenv.config();  // Load environment variables
 
@@ -27,8 +27,8 @@ app.get('/', (req: Request, res: Response) => {
     res.send('running...');
 });
 
-// Movie routes
-app.use('/api/movies', movieRoutes);
+// Setup routes
+app.use('/api/v1', apiRoutes);
 
 app.listen(PORT, () => {
     console.log(`🚀 Server is running at http://localhost:${PORT}`);
