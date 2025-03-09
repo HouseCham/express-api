@@ -1,0 +1,31 @@
+services:
+  db:
+    container_name: ${DB_CONTAINER_NAME}
+    image: postgres:17.0-alpine3.20
+    volumes:
+      - movies-db:/var/lib/postgresql/data
+    ports:
+      - "${DB_PORT:-5432}:5432"
+    environment:
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_DB: ${DB_NAME}
+
+  pgAdmin:
+    depends_on:
+      - db
+    container_name: ${PGADMIN_CONTAINER_NAME}
+    image: dpage/pgadmin4:8.12.0
+    volumes:
+      - pgadmin:/var/lib/pgadmin
+    ports:
+      - "${PGADMIN_PORT:-5050}:80"
+    environment:
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_PASSWORD}
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_EMAIL}
+
+volumes: 
+  movies-db:
+    external: true
+  pgadmin:
+    external: true

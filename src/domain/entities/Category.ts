@@ -1,4 +1,4 @@
-import { sequelize } from '@/src/infrastructure/db/connection';
+import { sequelize } from '@/infrastructure/db/connection';
 import { Model, DataTypes } from 'sequelize';
 /**
  * @class Category

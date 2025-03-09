@@ -1,6 +1,6 @@
 import { Model, DataTypes } from 'sequelize';
-import { Category } from '@/src/domain/entities/Category';
-import { sequelize } from '@/src/infrastructure/db/connection';
+import { Category } from '@/domain/entities/Category';
+import { sequelize } from '@/infrastructure/db/connection';
 
 /**
  * @class Movie

@@ -1,8 +1,31 @@
+import { Movie } from '@/domain/entities/Movie';
+import IHttpResponse from '@/domain/interfaces/IHttpResponse';
 import { Request, Response } from 'express';
 
-// Get all movies
-export const getAllMovies = (req: Request, res: Response) => {
-  res.json([{ id: 1, title: 'Inception' }, { id: 2, title: 'Interstellar' }]);
+/**
+ * Controller to get all movies
+ * @param {Request} req - Request object
+ * @param {Response} res - Response object
+ * @returns {Promise<HttpResponse<Movie[]>>}
+ */
+export const getAllMovies = async (req: Request, res: Response) => {
+  try {
+    // get all movies from the database
+    const movies = await Movie.findAll();
+    const response: IHttpResponse<Movie[]> = {
+      status: 200,
+      message: 'Movies retrieved successfully',
+      data: movies,
+    };
+    res.status(200).json(response);
+  } catch (error) {
+    const response: IHttpResponse<unknown> = {
+      status: 500,
+      message: 'Internal server error',
+      data: error,
+    };
+    res.status(500).json(response);
+  };
 };
 
 // Create a new movie
