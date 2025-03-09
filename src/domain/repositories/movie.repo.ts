@@ -1,5 +1,6 @@
-import { Movie } from '@/src/domain/entities/Movie';
-import { IBaseModel } from '@/src/domain/interfaces/IBaseModel';
+import { Movie } from "@/domain/entities/Movie";
+import { IBaseModel } from "@/domain/interfaces/IBaseModel";
+
 /**
  * @class MovieRepository
  * @extends {IBaseModel<Movie>}

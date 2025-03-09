@@ -1,5 +1,6 @@
-import { Category } from '@/src/domain/entities/Category';
-import { IBaseModel } from '@/src/domain/interfaces/IBaseModel';
+import { Category } from "@/domain/entities/Category";
+import { IBaseModel } from "@/domain/interfaces/IBaseModel";
+
 /**
  * @class CategoryRepository
  * @extends {IBaseModel<Category>}
