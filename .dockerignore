@@ -4,3 +4,5 @@ docker-compose-yaml
 README.md
 .env
 Makefile
+__test__/
+jest.config.js

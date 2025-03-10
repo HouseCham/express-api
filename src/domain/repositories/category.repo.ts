@@ -36,9 +36,11 @@ export class CategoryRepository implements IBaseModel<Category> {
    * @returns {Promise<boolean>}
    */
   async delete(id: number): Promise<boolean> {
-    const category = await Category.findByPk(id);
+    const category = await Category.findOne({
+      where: { id, deletedAt: null },
+    })
     if (category) {
-      await category.update({ deletedAt: new Date() });
+      await category.destroy();
       return true;
     }
     return false;
@@ -49,14 +51,18 @@ export class CategoryRepository implements IBaseModel<Category> {
    * @returns {Promise<Category | null>}
    */
   async findById(id: number): Promise<Category | null> {
-    return Category.findByPk(id);
+    return Category.findOne({
+      where: { id, deletedAt: null },
+    });
   }
   /**
    * Repository function to find all categories
    * @returns {Promise<Category[]>}
    */
   async findAll(): Promise<Category[]> {
-    return Category.findAll();
+    return Category.findAll({
+      where: { deletedAt: null },
+    });
   }
   /**
    * Repository function to find a category by its name
@@ -68,7 +74,8 @@ export class CategoryRepository implements IBaseModel<Category> {
       where: { 
         name: {
           [Op.iLike]: `%${name}%`
-        }
+        },
+        deletedAt: null
       }
     });
   }

@@ -1,7 +1,9 @@
 import { Category } from "@/domain/entities/Category";
+import { Movie } from "@/domain/entities/Movie";
 import { HttpCodes } from "@/domain/enums/httpCodes";
 import IHttpResponse from "@/domain/interfaces/IHttpResponse";
 import { CategoryRepository } from "@/domain/repositories/category.repo";
+import { MovieRepository } from "@/domain/repositories/movie.repo";
 
 /**
  * @class CategoryService
@@ -9,9 +11,11 @@ import { CategoryRepository } from "@/domain/repositories/category.repo";
  */
 export class CategoryService {
   private _categoryRepository: CategoryRepository;
+  private _moviesRepository: MovieRepository;
 
   constructor() {
     this._categoryRepository = new CategoryRepository();
+    this._moviesRepository = new MovieRepository();
   }
   /**
    * Service to create a category
@@ -44,22 +48,32 @@ export class CategoryService {
    * @param {Partial<Category>} data - Category data
    * @returns {Promise<IHttpResponse<Category | null>>}
    */
-  public async updateCategory(id: number, data: Partial<Category>) {
-    const category = await this._categoryRepository.findById(id);
+  public async updateCategory(data: Partial<Category>) {
+    const category = await this._categoryRepository.findById(data.id ?? 0);
     if (!category) {
       const response: IHttpResponse<null> = {
-        status: HttpCodes.BAD_REQUEST,
+        status: HttpCodes.NOT_FOUND,
         message: 'Category not found',
         data: null,
       };
       return response;
     }
+    // check if the category already exists
+    const categoryExists = await this._categoryRepository.findCategoryByName(data.name ?? "");
+    if (!!categoryExists && categoryExists.id !== category.id) {
+      const response: IHttpResponse<Category> = {
+        status: HttpCodes.CONFLICT,
+        message: 'Category already exists',
+        data: categoryExists,
+      };
+      return response;
+    }
     // update the category
-    const categoryUpdated = await this._categoryRepository.update(id, data);
+    const categoryUpdated = await this._categoryRepository.update(category.id, data);
     const response: IHttpResponse<Category> = {
       status: categoryUpdated ? HttpCodes.OK : HttpCodes.INTERNAL_SERVER_ERROR,
       message: categoryUpdated ? 'Category updated successfully' : 'Error updating category',
-      data: category,
+      data: data as Category,
     };
     return response;
   }
@@ -69,18 +83,38 @@ export class CategoryService {
    * @returns {Promise<IHttpResponse<null>>}
    * @description This method updates the deletedAt field of the category
    */
-  public async deleteCategory(id: number) {
-    const category = await this._categoryRepository.findById(id);
-    if (!category) {
+  public async deleteCategory(id: string) {
+    // check if the id is a number
+    if (isNaN(Number(id))) {
       const response: IHttpResponse<null> = {
         status: HttpCodes.BAD_REQUEST,
+        message: 'Invalid category ID',
+        data: null,
+      };
+      return response;
+    }
+    const categoryId = Number(id);
+    const category = await this._categoryRepository.findById(categoryId);
+    if (!category) {
+      const response: IHttpResponse<null> = {
+        status: HttpCodes.NOT_FOUND,
         message: 'Category not found',
         data: null,
       };
       return response;
     }
+    // verify if the category has movies
+    const movies = await this._moviesRepository.findMoviesByCategoryId(categoryId);
+    if (movies.length > 0) {
+      const response: IHttpResponse<Movie[]> = {
+        status: HttpCodes.CONFLICT,
+        message: 'Cannot delete category with associated movies',
+        data: movies,
+      };
+      return response;
+    }
     // delete the category
-    const categoryDeleted = await this._categoryRepository.delete(id);
+    const categoryDeleted = await this._categoryRepository.delete(categoryId);
     const response: IHttpResponse<null> = {
       status: categoryDeleted ? HttpCodes.OK : HttpCodes.INTERNAL_SERVER_ERROR,
       message: categoryDeleted ? 'Category deleted successfully' : 'Error deleting category',
@@ -93,11 +127,20 @@ export class CategoryService {
    * @param {number} id - Category id
    * @returns {Promise<IHttpResponse<Category | null>>}
    */
-  public async getCategoryById(id: number) {
-    const category = await this._categoryRepository.findById(id);
-    if (!category) {
+  public async getCategoryById(id: string) {
+    // check if the id is a number
+    if (isNaN(Number(id))) {
       const response: IHttpResponse<null> = {
         status: HttpCodes.BAD_REQUEST,
+        message: 'Invalid category ID',
+        data: null,
+      };
+      return response;
+    }
+    const category = await this._categoryRepository.findById(Number(id));
+    if (!category) {
+      const response: IHttpResponse<null> = {
+        status: HttpCodes.NOT_FOUND,
         message: 'Category not found',
         data: null,
       };
@@ -105,7 +148,7 @@ export class CategoryService {
     }
     const response: IHttpResponse<Category> = {
       status: HttpCodes.OK,
-      message: 'Category found',
+      message: 'Category retrieved successfully',
       data: category,
     };
     return response;

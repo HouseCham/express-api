@@ -4,6 +4,7 @@ import { Category } from "@/domain/entities/Category";
 import { Op, WhereOptions } from "sequelize";
 import ISearchParams from "@/domain/interfaces/ISearchParams";
 
+
 /**
  * @class MovieRepository
  * @extends {IBaseModel<Movie>}
@@ -25,7 +26,9 @@ export class MovieRepository implements IBaseModel<Movie> {
    * @returns {Promise<Movie | null>}
    */
   async update(id: number, data: Partial<Movie>): Promise<Movie | null> {
-    const movie = await Movie.findByPk(id);
+    const movie = await Movie.findOne({
+      where: { id, deletedAt: null },
+    })
     if (movie) {
       await movie.update(data);
     }
@@ -38,9 +41,11 @@ export class MovieRepository implements IBaseModel<Movie> {
    * @returns {Promise<boolean>}
    */
   async delete(id: number): Promise<boolean> {
-    const movie = await Movie.findByPk(id);
+    const movie = await Movie.findOne({
+      where: { id, deletedAt: null },
+    })
     if (movie) {
-      await movie.update({ deletedAt: new Date() });
+      await movie.destroy();
       return true;
     }
     return false;
@@ -67,7 +72,15 @@ export class MovieRepository implements IBaseModel<Movie> {
    * @returns {Promise<Movie | null>}
    */
   async findAll(): Promise<Movie[]> {
-    return Movie.findAll();
+    return Movie.findAll({
+      where: { deletedAt: null },
+      include: [
+        {
+          model: Category,
+          attributes: ['name'],
+        },
+      ],
+    });
   };
   /**
    * Repository function to find all movies
@@ -84,20 +97,17 @@ export class MovieRepository implements IBaseModel<Movie> {
     } = searchParams;
 
     const whereConditions: WhereOptions = { deletedAt: null };
-
     // Apply search query condition if present
     if (searchQuery) {
       whereConditions.title = {
         [Op.iLike]: `%${searchQuery}%`,
       };
     }
-
     // Apply category filter if present
     if (categoryId > 0) {
       whereConditions.categoryId = categoryId;
     }
-
-    return await Movie.findAll({
+    const movieList = await Movie.findAll({
       where: whereConditions,
       include: [
         {
@@ -109,6 +119,7 @@ export class MovieRepository implements IBaseModel<Movie> {
       offset: itemsPerPage * (page - 1),
       order: [[sortBy, sortOrder]],
     });
+    return movieList;
   }
   /**
    * Repository function to find a movie by title
@@ -121,6 +132,19 @@ export class MovieRepository implements IBaseModel<Movie> {
         title: {
           [Op.iLike]: `%${title}%`,  // Case-insensitive search
         },
+        deletedAt: null,
+      },
+    });
+  }
+  /**
+   * Repository function to find all movies by category id
+   * @param {number} categoryId - Category id
+   * @returns {Promise<Movie[]>}
+   */
+  async findMoviesByCategoryId(categoryId: number): Promise<Movie[]> {
+    return Movie.findAll({
+      where: {
+        categoryId,
         deletedAt: null,
       },
     });

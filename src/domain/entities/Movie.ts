@@ -1,7 +1,6 @@
 import { Model, DataTypes } from 'sequelize';
 import { Category } from '@/domain/entities/Category';
 import { sequelize } from '@/infrastructure/db/connection';
-
 /**
  * @class Movie
  * @extends {Model} Sequelize Model
@@ -44,6 +43,7 @@ Movie.init({
   sequelize,
   modelName: 'Movie',
   tableName: 'movies',
+  paranoid: true,
 });
 
 Movie.belongsTo(Category, { foreignKey: 'categoryId' });

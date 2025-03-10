@@ -2,24 +2,27 @@ import { Movie } from "@/domain/entities/Movie";
 import { HttpCodes } from "@/domain/enums/httpCodes";
 import IHttpResponse from "@/domain/interfaces/IHttpResponse";
 import { MovieRepository } from "@/domain/repositories/movie.repo";
-import { MovieDTO } from "../dto/MovieDTO";
+import { MovieDTO } from "@/application/dto/MovieDTO";
 import ISearchParams from "@/domain/interfaces/ISearchParams";
+import { CategoryRepository } from "@/domain/repositories/category.repo";
 /**
  * @class MovieService
  * @description Service for Movie entity
  */
 export class MovieService {
   private _movieRepository: MovieRepository;
+  private _categoryRepository: CategoryRepository;
 
   constructor() {
     this._movieRepository = new MovieRepository();
+    this._categoryRepository = new CategoryRepository();
   }
   /**
    * Service to create a movie
    * @param {Movie} data - Movie data
    * @returns {Promise<IHttpResponse<Movie>>}
    */
-  public async createMovie(data: Movie): Promise<IHttpResponse<Movie>> {
+  public async createMovie(data: Movie): Promise<IHttpResponse<Movie | null>> {
     // check if the movie already exists
     const movieExists = await this._movieRepository.findMovieByTitle(data.title);
     if (!!movieExists) {
@@ -27,6 +30,16 @@ export class MovieService {
         status: HttpCodes.CONFLICT,
         message: 'Movie already exists',
         data: movieExists,
+      };
+      return response;
+    }
+    // check if the category exists
+    const category = await this._categoryRepository.findById(data.categoryId);
+    if (!category) {
+      const response: IHttpResponse<null> = {
+        status: HttpCodes.BAD_REQUEST,
+        message: `There is no category with the given id: ${data.categoryId}`,
+        data: null,
       };
       return response;
     }
@@ -45,8 +58,8 @@ export class MovieService {
    * @param {Partial<Movie>} data - Movie data
    * @returns {Promise<IHttpResponse<Movie | null>>}
    */
-  public async updateMovie(id: number, data: Partial<Movie>): Promise<IHttpResponse<Movie | null>> {
-    const movie = await this._movieRepository.findById(id);
+  public async updateMovie(data: Partial<Movie>): Promise<IHttpResponse<Movie | null>> {
+    const movie = await this._movieRepository.findById(data.id ?? 0);
     if (!movie) {
       const response: IHttpResponse<null> = {
         status: HttpCodes.NOT_FOUND,
@@ -55,8 +68,28 @@ export class MovieService {
       };
       return response;
     }
+    // check if the movie already exists
+    const movieTitleExists = await this._movieRepository.findMovieByTitle(data.title ?? '');
+    if (!!movieTitleExists && movieTitleExists.id !== movie.id) {
+      const response: IHttpResponse<Movie> = {
+        status: HttpCodes.CONFLICT,
+        message: 'Movie title already exists',
+        data: movieTitleExists,
+      };
+      return response;
+    }
+    // check if the category exists
+    const category = await this._categoryRepository.findById(data.categoryId ?? 0);
+    if (!category) {
+      const response: IHttpResponse<null> = {
+        status: HttpCodes.BAD_REQUEST,
+        message: `There is no category with the given id: ${data.categoryId}`,
+        data: null,
+      };
+      return response;
+    }
     // update the movie
-    const movieUpdated = await this._movieRepository.update(id, data);
+    const movieUpdated = await this._movieRepository.update(movie.id, data);
     const response: IHttpResponse<Movie> = {
       status: movieUpdated ? HttpCodes.OK : HttpCodes.INTERNAL_SERVER_ERROR,
       message: movieUpdated ? 'Movie updated successfully' : 'Error updating movie',

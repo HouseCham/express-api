@@ -44,13 +44,19 @@ src/
 
 ## 📦 Environment Variables (`.env`)
 ```bash
+DB_CONTAINER_NAME=movie_db
 DB_HOST=localhost
 DB_PORT=5432
-DB_USER=your_username
-DB_PASSWORD=your_password
-DB_NAME=your_database
+DB_USER=admin
+DB_PASSWORD=my_secret_password
+DB_NAME=movies_db
 DB_DIALECT=postgres
-PORT=3000
+
+API_CONTAINER_NAME=movies-api
+API_IMAGE_NAME=web-api:1.0.0
+API_HOST=http://localhost
+API_PORT=3000
+API_CLIENT_URL=http://localhost:3000
 ```
 
 ---
@@ -123,8 +129,8 @@ PORT=3000
 
 ### 1. Clone the Repository
 ```bash
-git clone https://github.com/your-username/movie-catalog-api.git
-cd movie-catalog-api
+git clone https://github.com/HouseCham/express-api.git
+cd express-api
 ```
 
 ### 2. Install Dependencies
@@ -134,12 +140,26 @@ npm install
 
 ### 3. Run Migrations
 ```bash
-npx sequelize-cli db:migrate
+npx sequelize-cli db:migrate --config src/infrastructure/config/config.js
 ```
 
-### 4. Start the Server
+### 4. Run tests
+```bash
+npm run test
+```
+
+### 5. Build project
+```bash
+npm run build
+```
+
+### 6. Start the Server for DEV or PRODUCTION
 ```bash
 npm run dev
+```
+or
+```bash
+npm run start
 ```
 
 Server will run at: [http://localhost:3000](http://localhost:3000)
