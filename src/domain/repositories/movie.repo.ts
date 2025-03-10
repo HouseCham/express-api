@@ -1,8 +1,8 @@
 import { Movie } from "@/domain/entities/Movie";
-import { IBaseModel } from "@/domain/interfaces/IBaseModel";
-import { Category } from "../entities/Category";
+import IBaseModel from "@/domain/interfaces/IBaseModel";
+import { Category } from "@/domain/entities/Category";
 import { Op, WhereOptions } from "sequelize";
-import ISearchParams from "../interfaces/ISearchParams";
+import ISearchParams from "@/domain/interfaces/ISearchParams";
 
 /**
  * @class MovieRepository

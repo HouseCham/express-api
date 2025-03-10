@@ -1,5 +1,5 @@
 import { Category } from "@/domain/entities/Category";
-import { IBaseModel } from "@/domain/interfaces/IBaseModel";
+import IBaseModel from "@/domain/interfaces/IBaseModel";
 import { Op } from "sequelize";
 
 /**

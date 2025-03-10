@@ -8,7 +8,7 @@
  * @method findById - Find record by its ID
  * @method findAll - Find all records
  */
-export interface IBaseModel<T> {
+export default interface IBaseModel<T> {
     create(data: T): Promise<T>;
     update(id: number, data: Partial<T>): Promise<T | null>;
     delete(id: number): Promise<boolean>;

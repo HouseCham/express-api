@@ -1,4 +1,8 @@
-// create enum for http codes
+/**
+ * Enum for HTTP status codes
+ * @readonly
+ * @enum {number}
+ */
 export enum HttpCodes {
     // success
     OK = 200,
