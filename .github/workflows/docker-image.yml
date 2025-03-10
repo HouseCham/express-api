@@ -1,0 +1,43 @@
+name: Docker Image CI
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+
+    - name: Git Semantic Version
+      uses: PaulHatch/semantic-version@v4.0.3
+      with:
+        major_pattern: "major:"
+        minor_pattern: "ft:"
+        patch_pattern: "fix:"
+        format: "${major}.${minor}.${patch}"
+      id: version
+      
+    - name: Docker login
+      env:
+        DOCKER_USER: ${{ secrets.DOCKER_USER }}
+        DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+      run: |
+        docker login -u $DOCKER_USER -p $DOCKER_PASSWORD
+
+    - name: Build Image
+      env:
+        IMG_VERSION: ${{ steps.version.outputs.version }}
+      run:  |
+        docker buildx create --name mybuilder --use
+        docker buildx build --platform linux/amd64,linux/arm/v7 --push -t chamito/movie-api:$IMG_VERSION .
+        docker buildx build --platform linux/amd64,linux/arm/v7 --push -t chamito/movie-api:latest .

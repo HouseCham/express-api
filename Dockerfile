@@ -12,7 +12,7 @@ RUN npm run build
 RUN rm -rf node_modules && npm ci --only=production
 
 # Production stage
-FROM node:23.9-alpine AS production
+FROM --platform=$BUILDPLATFORM node:23.9-alpine AS production
 WORKDIR /app
 
 ENV NODE_ENV=production
