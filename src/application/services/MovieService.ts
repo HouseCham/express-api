@@ -45,8 +45,8 @@ export class MovieService {
    * @param {Partial<Movie>} data - Movie data
    * @returns {Promise<IHttpResponse<Movie | null>>}
    */
-  public async updateMovie(id: number, data: Partial<Movie>): Promise<IHttpResponse<Movie | null>> {
-    const movie = await this._movieRepository.findById(id);
+  public async updateMovie(data: Partial<Movie>): Promise<IHttpResponse<Movie | null>> {
+    const movie = await this._movieRepository.findById(data.id ?? 0);
     if (!movie) {
       const response: IHttpResponse<null> = {
         status: HttpCodes.NOT_FOUND,
@@ -56,7 +56,7 @@ export class MovieService {
       return response;
     }
     // update the movie
-    const movieUpdated = await this._movieRepository.update(id, data);
+    const movieUpdated = await this._movieRepository.update(movie.id, data);
     const response: IHttpResponse<Movie> = {
       status: movieUpdated ? HttpCodes.OK : HttpCodes.INTERNAL_SERVER_ERROR,
       message: movieUpdated ? 'Movie updated successfully' : 'Error updating movie',

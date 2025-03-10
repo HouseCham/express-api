@@ -88,9 +88,8 @@ export default class MovieController {
     console.log('Controller: updateMovie called', new Date());
     try {
       // get the movie id from the request
-      const { id } = req.params;
       const movie: Movie = req.body;
-      const response = await this._movieService.updateMovie(Number(id), movie);
+      const response = await this._movieService.updateMovie(movie);
       res.status(response.status).json(response);
     } catch (error) {
       console.error(`Error updating a movie ${new Date()}:`, error);

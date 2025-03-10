@@ -69,9 +69,8 @@ export default class CategoryController {
     public updateCategory = async (req: Request, res: Response) => {
         console.log('Category controller: updateCategory called', new Date());
         try {
-            const { id } = req.params;
             const category: Category = req.body;
-            const response = await this._categoryService.updateCategory(Number(id), category);
+            const response = await this._categoryService.updateCategory(category);
             res.status(response.status).json(response);
         } catch (error) {
             console.error(`Error updating a category ${new Date()}:`, error);

@@ -1,7 +1,9 @@
 import { Category } from "@/domain/entities/Category";
+import { Movie } from "@/domain/entities/Movie";
 import { HttpCodes } from "@/domain/enums/httpCodes";
 import IHttpResponse from "@/domain/interfaces/IHttpResponse";
 import { CategoryRepository } from "@/domain/repositories/category.repo";
+import { MovieRepository } from "@/domain/repositories/movie.repo";
 
 /**
  * @class CategoryService
@@ -9,9 +11,11 @@ import { CategoryRepository } from "@/domain/repositories/category.repo";
  */
 export class CategoryService {
   private _categoryRepository: CategoryRepository;
+  private _moviesRepository: MovieRepository;
 
   constructor() {
     this._categoryRepository = new CategoryRepository();
+    this._moviesRepository = new MovieRepository();
   }
   /**
    * Service to create a category
@@ -44,8 +48,8 @@ export class CategoryService {
    * @param {Partial<Category>} data - Category data
    * @returns {Promise<IHttpResponse<Category | null>>}
    */
-  public async updateCategory(id: number, data: Partial<Category>) {
-    const category = await this._categoryRepository.findById(id);
+  public async updateCategory(data: Partial<Category>) {
+    const category = await this._categoryRepository.findById(data.id ?? 0);
     if (!category) {
       const response: IHttpResponse<null> = {
         status: HttpCodes.BAD_REQUEST,
@@ -55,7 +59,7 @@ export class CategoryService {
       return response;
     }
     // update the category
-    const categoryUpdated = await this._categoryRepository.update(id, data);
+    const categoryUpdated = await this._categoryRepository.update(category.id, data);
     const response: IHttpResponse<Category> = {
       status: categoryUpdated ? HttpCodes.OK : HttpCodes.INTERNAL_SERVER_ERROR,
       message: categoryUpdated ? 'Category updated successfully' : 'Error updating category',
@@ -76,6 +80,16 @@ export class CategoryService {
         status: HttpCodes.BAD_REQUEST,
         message: 'Category not found',
         data: null,
+      };
+      return response;
+    }
+    // verify if the category has movies
+    const movies = await this._moviesRepository.findMoviesByCategoryId(id);
+    if (movies.length > 0) {
+      const response: IHttpResponse<Movie[]> = {
+        status: HttpCodes.BAD_REQUEST,
+        message: `Category '${category.name}' has movies associated, cannot be deleted yet`,
+        data: movies,
       };
       return response;
     }
