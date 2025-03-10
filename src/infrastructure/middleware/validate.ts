@@ -1,6 +1,8 @@
-import { Schema, ZodSchema } from 'zod';
+import { ZodSchema } from 'zod';
 import { Request, Response, NextFunction } from 'express';
 import { HttpCodes } from '@/domain/enums/httpCodes';
+import IHttpResponse from '@/domain/interfaces/IHttpResponse';
+import IBadRequestError from '@/domain/interfaces/IBadRequestError';
 /**
  * Middleware to validate request body against a schema
  * @param schema - Zod schema to validate request body
@@ -15,7 +17,12 @@ export const validateSchema =
                     path: err.path.join('.'),
                     message: err.message
                 }));
-                res.status(HttpCodes.BAD_REQUEST).json({ errors });
+                const response: IHttpResponse<IBadRequestError[]> = {
+                    status: HttpCodes.BAD_REQUEST,
+                    message: 'Validation error',
+                    data: errors,
+                };
+                res.status(response.status).json(response);
                 return;
             }
             next();
