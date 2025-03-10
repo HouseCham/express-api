@@ -45,7 +45,7 @@ export class MovieRepository implements IBaseModel<Movie> {
       where: { id, deletedAt: null },
     })
     if (movie) {
-      await movie.update({ deletedAt: new Date() });
+      await movie.destroy();
       return true;
     }
     return false;

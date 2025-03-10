@@ -43,6 +43,7 @@ Movie.init({
   sequelize,
   modelName: 'Movie',
   tableName: 'movies',
+  paranoid: true,
 });
 
 Movie.belongsTo(Category, { foreignKey: 'categoryId' });
