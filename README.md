@@ -130,7 +130,7 @@ API_CLIENT_URL=http://localhost:3000
 ### 1. Clone the Repository
 ```bash
 git clone https://github.com/HouseCham/express-api.git
-cd movie-catalog-api
+cd express-api
 ```
 
 ### 2. Install Dependencies
