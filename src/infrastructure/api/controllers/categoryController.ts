@@ -52,7 +52,7 @@ export default class CategoryController {
     public createCategory = async (req: Request, res: Response) => {
         console.log('Controller: createCategory called');
         try {
-            const category = Category.build(req.body);
+            const category: Category = req.body;
             const response = await this._categoryService.createCategory(category);
             res.status(response.status).json(response);
         } catch (error) {
@@ -70,7 +70,7 @@ export default class CategoryController {
         console.log('Controller: updateCategory called');
         try {
             const { id } = req.params;
-            const category = Category.build(req.body);
+            const category: Category = req.body;
             const response = await this._categoryService.updateCategory(Number(id), category);
             res.status(response.status).json(response);
         } catch (error) {
