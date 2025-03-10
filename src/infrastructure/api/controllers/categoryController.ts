@@ -17,12 +17,12 @@ export default class CategoryController {
      * @returns {Promise<HttpResponse<Category[]>>}
      */
     public getAllCategories = async (req: Request, res: Response) => {
-        console.log('Controller: getAllCategories called');
+        console.log('Category controller: getAllCategories called', new Date());
         try {
             const response = await this._categoryService.listCategories();
             res.status(response.status).json(response);
         } catch (error) {
-            console.error('Error getting all categories:', error);
+            console.error(`Error getting all categories ${new Date()}:`, error);
             res.status(HttpCodes.INTERNAL_SERVER_ERROR).json(createErrorResponse());
         };
     }
@@ -33,13 +33,13 @@ export default class CategoryController {
      * @returns {Promise<HttpResponse<Category>>}
      */
     public getCategoryById = async (req: Request, res: Response) => {
-        console.log('Controller: getCategoryById called');
+        console.log('Category controller: getCategoryById called', new Date());
         try {
             const { id } = req.params;
             const response = await this._categoryService.getCategoryById(Number(id));
             res.status(response.status).json(response);
         } catch (error) {
-            console.error('Error getting a category:', error);
+            console.error(`Error getting a category ${new Date()}:`, error);
             res.status(HttpCodes.INTERNAL_SERVER_ERROR).json(createErrorResponse());
         }
     }
@@ -50,13 +50,13 @@ export default class CategoryController {
      * @returns {Promise<HttpResponse<Category>>}
      */
     public createCategory = async (req: Request, res: Response) => {
-        console.log('Controller: createCategory called');
+        console.log('Category controller: createCategory called', new Date());
         try {
             const category: Category = req.body;
             const response = await this._categoryService.createCategory(category);
             res.status(response.status).json(response);
         } catch (error) {
-            console.error('Error creating a category:', error);
+            console.error(`Error creating a category ${new Date()}:`, error);
             res.status(HttpCodes.INTERNAL_SERVER_ERROR).json(createErrorResponse());
         }
     }
@@ -67,14 +67,14 @@ export default class CategoryController {
      * @returns {Promise<HttpResponse<Category>>}
      */
     public updateCategory = async (req: Request, res: Response) => {
-        console.log('Controller: updateCategory called');
+        console.log('Category controller: updateCategory called', new Date());
         try {
             const { id } = req.params;
             const category: Category = req.body;
             const response = await this._categoryService.updateCategory(Number(id), category);
             res.status(response.status).json(response);
         } catch (error) {
-            console.error('Error updating a category:', error);
+            console.error(`Error updating a category ${new Date()}:`, error);
             res.status(HttpCodes.INTERNAL_SERVER_ERROR).json(createErrorResponse());
         }
     }
@@ -85,13 +85,13 @@ export default class CategoryController {
      * @returns {Promise<HttpResponse<null>>}
      */
     public deleteCategory = async (req: Request, res: Response) => {
-        console.log('Controller: deleteCategory called');
+        console.log('Category controller: deleteCategory called', new Date());
         try {
             const { id } = req.params;
             const response = await this._categoryService.deleteCategory(Number(id));
             res.status(response.status).json(response);
         } catch (error) {
-            console.error('Error deleting a category:', error);
+            console.error(`Error deleting a category ${new Date()}:`, error);
             res.status(HttpCodes.INTERNAL_SERVER_ERROR).json(createErrorResponse());
         }
     }

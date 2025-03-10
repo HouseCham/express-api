@@ -2,6 +2,7 @@ import { Movie } from "@/domain/entities/Movie";
 import { HttpCodes } from "@/domain/enums/httpCodes";
 import IHttpResponse from "@/domain/interfaces/IHttpResponse";
 import { MovieRepository } from "@/domain/repositories/movie.repo";
+import { MovieDTO } from "../dto/MovieDTO";
 /**
  * @class MovieService
  * @description Service for Movie entity
@@ -90,7 +91,7 @@ export class MovieService {
    * @param {number} id - Movie id
    * @returns {Promise<IHttpResponse<Movie | null>>}
    */
-  public async getMovieById(id: number): Promise<IHttpResponse<Movie | null>> {
+  public async getMovieById(id: number): Promise<IHttpResponse<MovieDTO | null>> {
     const movie = await this._movieRepository.findById(id);
     if (!movie) {
       const response: IHttpResponse<null> = {
@@ -100,10 +101,19 @@ export class MovieService {
       };
       return response;
     }
-    const response: IHttpResponse<Movie> = {
+    const movieDTO: MovieDTO = {
+      id: movie.id,
+      title: movie.title,
+      description: movie.description,
+      category: {
+        id: movie.categoryId,
+        name: movie.Category?.name || 'Unknown',
+      }
+    };
+    const response: IHttpResponse<MovieDTO> = {
       status: HttpCodes.OK,
       message: 'Movie retrieved successfully',
-      data: movie,
+      data: movieDTO,
     };
     return response;
   }
@@ -112,12 +122,21 @@ export class MovieService {
    * @returns {Promise<IHttpResponse<Movie[]>>}
    * @description This method retrieves all movies from the database
    */
-  public async listMovies(): Promise<IHttpResponse<Movie[]>> {
-    const movies = await this._movieRepository.findAll();
-    const response: IHttpResponse<Movie[]> = {
+  public async listMovies(): Promise<IHttpResponse<MovieDTO[]>> {
+    const moviesDB = await this._movieRepository.findAll();
+    const moviesDTO: MovieDTO[] = moviesDB.map((movie) => ({
+      id: movie.id,
+      title: movie.title,
+      description: movie.description,
+      category: {
+        id: movie.categoryId,
+        name: movie.Category?.name || 'Unknown',
+      }
+    }));
+    const response: IHttpResponse<MovieDTO[]> = {
       status: HttpCodes.OK,
-      message: movies.length > 0 ? 'Movies retrieved successfully' : 'No movies found',
-      data: movies,
+      message: moviesDTO.length > 0 ? 'Movies retrieved successfully' : 'No movies found',
+      data: moviesDTO,
     };
     return response;
   }

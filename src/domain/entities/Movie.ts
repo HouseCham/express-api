@@ -8,6 +8,7 @@ import { sequelize } from '@/infrastructure/db/connection';
  * @description Represents Movie entity in the database
  */
 export class Movie extends Model {
+  [x: string]: any;
   public id!: number;
   public title!: string;
   public description!: string;

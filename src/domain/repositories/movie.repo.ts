@@ -1,5 +1,7 @@
 import { Movie } from "@/domain/entities/Movie";
 import { IBaseModel } from "@/domain/interfaces/IBaseModel";
+import { Category } from "../entities/Category";
+import { MovieDTO } from "@/application/dto/MovieDTO";
 
 /**
  * @class MovieRepository
@@ -48,13 +50,29 @@ export class MovieRepository implements IBaseModel<Movie> {
    * @returns {Promise<Movie | null>}
    */
   async findById(id: number): Promise<Movie | null> {
-    return Movie.findByPk(id);
+    return Movie.findOne({
+      where: { id, deletedAt: null },
+      include: [
+        {
+          model: Category,
+          attributes: ['name'],
+        },
+      ],
+    });
   }
   /**
    * Repository function to find all movies
    * @returns {Promise<Movie[]>}
    */
   async findAll(): Promise<Movie[]> {
-    return Movie.findAll();
+    return await Movie.findAll({
+      where: { deletedAt: null },
+      include: [
+        {
+          model: Category,
+          attributes: ['name'],
+        },
+      ],
+    });
   }
 }
