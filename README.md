@@ -129,7 +129,7 @@ API_CLIENT_URL=http://localhost:3000
 
 ### 1. Clone the Repository
 ```bash
-git clone https://github.com/your-username/movie-catalog-api.git
+git clone https://github.com/HouseCham/express-api.git
 cd movie-catalog-api
 ```
 
@@ -140,12 +140,26 @@ npm install
 
 ### 3. Run Migrations
 ```bash
-npx sequelize-cli db:migrate
+npx sequelize-cli db:migrate --config src/infrastructure/config/config.js
 ```
 
-### 4. Start the Server
+### 4. Run tests
+```bash
+npm run test
+```
+
+### 5. Build project
+```bash
+npm run build
+```
+
+### 6. Start the Server for DEV or PRODUCTION
 ```bash
 npm run dev
+```
+or
+```bash
+npm run start
 ```
 
 Server will run at: [http://localhost:3000](http://localhost:3000)
