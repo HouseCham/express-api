@@ -36,7 +36,7 @@ export default class CategoryController {
         console.log('Category controller: getCategoryById called', new Date());
         try {
             const { id } = req.params;
-            const response = await this._categoryService.getCategoryById(Number(id));
+            const response = await this._categoryService.getCategoryById(id);
             res.status(response.status).json(response);
         } catch (error) {
             console.error(`Error getting a category ${new Date()}:`, error);
@@ -87,7 +87,7 @@ export default class CategoryController {
         console.log('Category controller: deleteCategory called', new Date());
         try {
             const { id } = req.params;
-            const response = await this._categoryService.deleteCategory(Number(id));
+            const response = await this._categoryService.deleteCategory(id);
             res.status(response.status).json(response);
         } catch (error) {
             console.error(`Error deleting a category ${new Date()}:`, error);

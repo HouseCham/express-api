@@ -27,5 +27,4 @@ Category.init({
   sequelize,
   modelName: 'Category',
   tableName: 'categories',
-  paranoid: true,
 });
