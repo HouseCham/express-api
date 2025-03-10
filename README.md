@@ -44,13 +44,19 @@ src/
 
 ## 📦 Environment Variables (`.env`)
 ```bash
+DB_CONTAINER_NAME=movie_db
 DB_HOST=localhost
 DB_PORT=5432
-DB_USER=your_username
-DB_PASSWORD=your_password
-DB_NAME=your_database
+DB_USER=admin
+DB_PASSWORD=my_secret_password
+DB_NAME=movies_db
 DB_DIALECT=postgres
-PORT=3000
+
+API_CONTAINER_NAME=movies-api
+API_IMAGE_NAME=web-api:1.0.0
+API_HOST=http://localhost
+API_PORT=3000
+API_CLIENT_URL=http://localhost:3000
 ```
 
 ---

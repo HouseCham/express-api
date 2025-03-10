@@ -4,6 +4,7 @@ import { Category } from "@/domain/entities/Category";
 import { Op, WhereOptions } from "sequelize";
 import ISearchParams from "@/domain/interfaces/ISearchParams";
 
+
 /**
  * @class MovieRepository
  * @extends {IBaseModel<Movie>}
@@ -84,20 +85,17 @@ export class MovieRepository implements IBaseModel<Movie> {
     } = searchParams;
 
     const whereConditions: WhereOptions = { deletedAt: null };
-
     // Apply search query condition if present
     if (searchQuery) {
       whereConditions.title = {
         [Op.iLike]: `%${searchQuery}%`,
       };
     }
-
     // Apply category filter if present
     if (categoryId > 0) {
       whereConditions.categoryId = categoryId;
     }
-
-    return await Movie.findAll({
+    const movieList = await Movie.findAll({
       where: whereConditions,
       include: [
         {
@@ -109,6 +107,7 @@ export class MovieRepository implements IBaseModel<Movie> {
       offset: itemsPerPage * (page - 1),
       order: [[sortBy, sortOrder]],
     });
+    return movieList;
   }
   /**
    * Repository function to find a movie by title
