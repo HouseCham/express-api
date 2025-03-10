@@ -2,3 +2,5 @@ node_modules/
 .gitignore
 docker-compose-yaml
 README.md
+.env
+Makefile
