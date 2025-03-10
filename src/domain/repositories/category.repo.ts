@@ -1,5 +1,6 @@
 import { Category } from "@/domain/entities/Category";
 import { IBaseModel } from "@/domain/interfaces/IBaseModel";
+import { Op } from "sequelize";
 
 /**
  * @class CategoryRepository
@@ -56,5 +57,19 @@ export class CategoryRepository implements IBaseModel<Category> {
    */
   async findAll(): Promise<Category[]> {
     return Category.findAll();
+  }
+  /**
+   * Repository function to find a category by its name
+   * @param {string} name - Category name
+   * @returns {Promise<Category | null>}
+   */
+  async findCategoryByName(name: string): Promise<Category | null> {
+    return Category.findOne({ 
+      where: { 
+        name: {
+          [Op.iLike]: `%${name}%`
+        }
+      }
+    });
   }
 }

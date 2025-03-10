@@ -2,6 +2,7 @@ import { Movie } from "@/domain/entities/Movie";
 import { IBaseModel } from "@/domain/interfaces/IBaseModel";
 import { Category } from "../entities/Category";
 import { MovieDTO } from "@/application/dto/MovieDTO";
+import { Op } from "sequelize";
 
 /**
  * @class MovieRepository
@@ -73,6 +74,21 @@ export class MovieRepository implements IBaseModel<Movie> {
           attributes: ['name'],
         },
       ],
+    });
+  }
+  /**
+   * Repository function to find a movie by title
+   * @param {string} title - Movie title
+   * @returns {Promise<Movie | null>}
+   */
+  async findMovieByTitle(title: string): Promise<Movie | null> {
+    return Movie.findOne({
+      where: {
+        title: {
+          [Op.iLike]: `%${title}%`,  // Case-insensitive search
+        },
+        deletedAt: null,
+      },
     });
   }
 }

@@ -1,4 +1,5 @@
 import { Category } from "@/domain/entities/Category";
+import { HttpCodes } from "@/domain/enums/httpCodes";
 import IHttpResponse from "@/domain/interfaces/IHttpResponse";
 import { CategoryRepository } from "@/domain/repositories/category.repo";
 
@@ -18,9 +19,20 @@ export class CategoryService {
    * @returns {Promise<IHttpResponse<Category>>}
    */
   public async createCategory(data: Category): Promise<IHttpResponse<Category>> {
+    // check if the category already exists
+    const categoryExists = await this._categoryRepository.findCategoryByName(data.name);
+    if (!!categoryExists) {
+      const response: IHttpResponse<Category> = {
+        status: HttpCodes.CONFLICT,
+        message: 'Category already exists',
+        data: categoryExists,
+      };
+      return response;
+    };
+    // create the category
     const category = await this._categoryRepository.create(data);
     const response: IHttpResponse<Category> = {
-      status: 201,
+      status: HttpCodes.CREATED,
       message: 'Category created successfully',
       data: category,
     };
@@ -36,7 +48,7 @@ export class CategoryService {
     const category = await this._categoryRepository.findById(id);
     if (!category) {
       const response: IHttpResponse<null> = {
-        status: 404,
+        status: HttpCodes.BAD_REQUEST,
         message: 'Category not found',
         data: null,
       };
@@ -45,7 +57,7 @@ export class CategoryService {
     // update the category
     const categoryUpdated = await this._categoryRepository.update(id, data);
     const response: IHttpResponse<Category> = {
-      status: categoryUpdated ? 200 : 500,
+      status: categoryUpdated ? HttpCodes.OK : HttpCodes.INTERNAL_SERVER_ERROR,
       message: categoryUpdated ? 'Category updated successfully' : 'Error updating category',
       data: category,
     };
@@ -61,7 +73,7 @@ export class CategoryService {
     const category = await this._categoryRepository.findById(id);
     if (!category) {
       const response: IHttpResponse<null> = {
-        status: 404,
+        status: HttpCodes.BAD_REQUEST,
         message: 'Category not found',
         data: null,
       };
@@ -70,7 +82,7 @@ export class CategoryService {
     // delete the category
     const categoryDeleted = await this._categoryRepository.delete(id);
     const response: IHttpResponse<null> = {
-      status: categoryDeleted ? 200 : 500,
+      status: categoryDeleted ? HttpCodes.OK : HttpCodes.INTERNAL_SERVER_ERROR,
       message: categoryDeleted ? 'Category deleted successfully' : 'Error deleting category',
       data: null,
     };
@@ -85,14 +97,14 @@ export class CategoryService {
     const category = await this._categoryRepository.findById(id);
     if (!category) {
       const response: IHttpResponse<null> = {
-        status: 404,
+        status: HttpCodes.BAD_REQUEST,
         message: 'Category not found',
         data: null,
       };
       return response;
     }
     const response: IHttpResponse<Category> = {
-      status: 200,
+      status: HttpCodes.OK,
       message: 'Category found',
       data: category,
     };
@@ -107,7 +119,7 @@ export class CategoryService {
   public async listCategories() {
     const categories = await this._categoryRepository.findAll();
     const response: IHttpResponse<Category[]> = {
-      status: 200,
+      status: HttpCodes.OK,
       message: categories.length > 0 ? 'Categories retrieved successfully' : 'No categories found',
       data: categories,
     };

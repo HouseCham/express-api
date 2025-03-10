@@ -19,6 +19,17 @@ export class MovieService {
    * @returns {Promise<IHttpResponse<Movie>>}
    */
   public async createMovie(data: Movie): Promise<IHttpResponse<Movie>> {
+    // check if the movie already exists
+    const movieExists = await this._movieRepository.findMovieByTitle(data.title);
+    if (!!movieExists) {
+      const response: IHttpResponse<Movie> = {
+        status: HttpCodes.CONFLICT,
+        message: 'Movie already exists',
+        data: movieExists,
+      };
+      return response;
+    }
+    // create the movie
     const movie = await this._movieRepository.create(data);
     const response: IHttpResponse<Movie> = {
       status: HttpCodes.CREATED,
