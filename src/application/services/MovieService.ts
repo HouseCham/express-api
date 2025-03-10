@@ -7,14 +7,18 @@ import { MovieRepository } from "@/domain/repositories/movie.repo";
  * @description Service for Movie entity
  */
 export class MovieService {
-  private movieRepository = new MovieRepository();
+  private _movieRepository: MovieRepository;
+
+  constructor() {
+    this._movieRepository = new MovieRepository();
+  }
   /**
    * Service to create a movie
    * @param {Movie} data - Movie data
    * @returns {Promise<IHttpResponse<Movie>>}
    */
-  async createMovie(data: Movie): Promise<IHttpResponse<Movie>> {
-    const movie = await this.movieRepository.create(data);
+  public async createMovie(data: Movie): Promise<IHttpResponse<Movie>> {
+    const movie = await this._movieRepository.create(data);
     const response: IHttpResponse<Movie> = {
       status: HttpCodes.CREATED,
       message: 'Movie created successfully',
@@ -28,8 +32,8 @@ export class MovieService {
    * @param {Partial<Movie>} data - Movie data
    * @returns {Promise<IHttpResponse<Movie | null>>}
    */
-  async updateMovie(id: number, data: Partial<Movie>): Promise<IHttpResponse<Movie | null>> {
-    const movie = await this.movieRepository.findById(id);
+  public async updateMovie(id: number, data: Partial<Movie>): Promise<IHttpResponse<Movie | null>> {
+    const movie = await this._movieRepository.findById(id);
     if (!movie) {
       const response: IHttpResponse<null> = {
         status: HttpCodes.NOT_FOUND,
@@ -39,7 +43,7 @@ export class MovieService {
       return response;
     }
     // update the movie
-    const movieUpdated = await this.movieRepository.update(id, data);
+    const movieUpdated = await this._movieRepository.update(id, data);
     const response: IHttpResponse<Movie> = {
       status: movieUpdated ? HttpCodes.OK : HttpCodes.INTERNAL_SERVER_ERROR,
       message: movieUpdated ? 'Movie updated successfully' : 'Error updating movie',
@@ -53,9 +57,9 @@ export class MovieService {
    * @returns {Promise<IHttpResponse<null>>}
    * @description This method updates the deletedAt field of the movie
    */
-  async deleteMovie(id: number): Promise<IHttpResponse<null>> {
+  public async deleteMovie(id: number): Promise<IHttpResponse<null>> {
     // find the movie by id
-    const movie = await this.movieRepository.findById(id);
+    const movie = await this._movieRepository.findById(id);
     if (!movie) {
       const response: IHttpResponse<null> = {
         status: HttpCodes.NOT_FOUND,
@@ -65,7 +69,7 @@ export class MovieService {
       return response;
     }
     // update deletedAt field
-    const deleted = await this.movieRepository.delete(id);
+    const deleted = await this._movieRepository.delete(id);
     if (!deleted) {
       const response: IHttpResponse<null> = {
         status: HttpCodes.INTERNAL_SERVER_ERROR,
@@ -86,8 +90,8 @@ export class MovieService {
    * @param {number} id - Movie id
    * @returns {Promise<IHttpResponse<Movie | null>>}
    */
-  async getMovieById(id: number): Promise<IHttpResponse<Movie | null>> {
-    const movie = await this.movieRepository.findById(id);
+  public async getMovieById(id: number): Promise<IHttpResponse<Movie | null>> {
+    const movie = await this._movieRepository.findById(id);
     if (!movie) {
       const response: IHttpResponse<null> = {
         status: HttpCodes.NOT_FOUND,
@@ -109,7 +113,7 @@ export class MovieService {
    * @description This method retrieves all movies from the database
    */
   public async listMovies(): Promise<IHttpResponse<Movie[]>> {
-    const movies = await this.movieRepository.findAll();
+    const movies = await this._movieRepository.findAll();
     const response: IHttpResponse<Movie[]> = {
       status: HttpCodes.OK,
       message: movies.length > 0 ? 'Movies retrieved successfully' : 'No movies found',

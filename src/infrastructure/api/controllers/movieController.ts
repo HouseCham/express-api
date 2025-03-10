@@ -59,7 +59,6 @@ export default class MovieController {
   public createMovie = async (req: Request, res: Response) => {
     console.log('Controller: createMovie called');
     try {
-      // create a new movie
       const movie = Movie.build(req.body);
       const response = await this._movieService.createMovie(movie);
       res.status(response.status).json(response);
@@ -79,8 +78,8 @@ export default class MovieController {
     try {
       // get the movie id from the request
       const { id } = req.params;
-      // find the movie by id
-      const response = await this._movieService.updateMovie(Number(id), req.body);
+      const movie = Movie.build(req.body);
+      const response = await this._movieService.updateMovie(Number(id), movie);
       res.status(response.status).json(response);
     } catch (error) {
       console.error('Error updating a movie:', error);
