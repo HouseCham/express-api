@@ -1,8 +1,8 @@
 import { Movie } from "@/domain/entities/Movie";
 import { IBaseModel } from "@/domain/interfaces/IBaseModel";
 import { Category } from "../entities/Category";
-import { MovieDTO } from "@/application/dto/MovieDTO";
-import { Op } from "sequelize";
+import { Op, WhereOptions } from "sequelize";
+import ISearchParams from "../interfaces/ISearchParams";
 
 /**
  * @class MovieRepository
@@ -62,18 +62,52 @@ export class MovieRepository implements IBaseModel<Movie> {
     });
   }
   /**
+   * Repository function to find a movie by title
+   * @param {string} title - Movie title
+   * @returns {Promise<Movie | null>}
+   */
+  async findAll(): Promise<Movie[]> {
+    return Movie.findAll();
+  };
+  /**
    * Repository function to find all movies
    * @returns {Promise<Movie[]>}
    */
-  async findAll(): Promise<Movie[]> {
+  async findAllMovies(searchParams: ISearchParams): Promise<Movie[]> {
+    const {
+      page,
+      itemsPerPage,
+      searchQuery,
+      categoryId,
+      sortBy = 'title',
+      sortOrder = 'DESC',
+    } = searchParams;
+
+    const whereConditions: WhereOptions = { deletedAt: null };
+
+    // Apply search query condition if present
+    if (searchQuery) {
+      whereConditions.title = {
+        [Op.iLike]: `%${searchQuery}%`,
+      };
+    }
+
+    // Apply category filter if present
+    if (categoryId > 0) {
+      whereConditions.categoryId = categoryId;
+    }
+
     return await Movie.findAll({
-      where: { deletedAt: null },
+      where: whereConditions,
       include: [
         {
           model: Category,
           attributes: ['name'],
         },
       ],
+      limit: itemsPerPage,
+      offset: itemsPerPage * (page - 1),
+      order: [[sortBy, sortOrder]],
     });
   }
   /**

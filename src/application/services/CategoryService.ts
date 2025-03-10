@@ -110,7 +110,6 @@ export class CategoryService {
     };
     return response;
   }
-
   /**
    * Service to get all categories
    * @returns {Promise<IHttpResponse<Category[]>>}

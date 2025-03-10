@@ -3,6 +3,7 @@ import { HttpCodes } from "@/domain/enums/httpCodes";
 import IHttpResponse from "@/domain/interfaces/IHttpResponse";
 import { MovieRepository } from "@/domain/repositories/movie.repo";
 import { MovieDTO } from "../dto/MovieDTO";
+import ISearchParams from "@/domain/interfaces/ISearchParams";
 /**
  * @class MovieService
  * @description Service for Movie entity
@@ -133,8 +134,8 @@ export class MovieService {
    * @returns {Promise<IHttpResponse<Movie[]>>}
    * @description This method retrieves all movies from the database
    */
-  public async listMovies(): Promise<IHttpResponse<MovieDTO[]>> {
-    const moviesDB = await this._movieRepository.findAll();
+  public async listMovies(searchParams: ISearchParams): Promise<IHttpResponse<MovieDTO[]>> {
+    const moviesDB = await this._movieRepository.findAllMovies(searchParams);
     const moviesDTO: MovieDTO[] = moviesDB.map((movie) => ({
       id: movie.id,
       title: movie.title,
