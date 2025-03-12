@@ -1,4 +1,6 @@
 node_modules/
+docs/
+.dockerignore
 .gitignore
 docker-compose-yaml
 README.md

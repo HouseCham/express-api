@@ -125,6 +125,55 @@ API_CLIENT_URL=http://localhost:3000
 
 ---
 
+## 📌 **Testing**
+This application has been thoroughly tested using [**Jest**](https://jestjs.io/), a JavaScript testing framework.  
+
+### 🛠 **Test Setup**
+- All tests are located inside the **`__tests__`** directory.
+- The tests cover **controllers, services, and repository layers**.
+- The application includes **unit and integration tests** to validate API endpoints.
+
+### 🚀 **Running the Tests**
+To execute the tests, run the following command:
+```bash
+npm run test
+```
+
+### ✅ **Test Results**
+The latest test run successfully **passed all test cases**:
+```bash
+Test Suites: 2 passed, 2 total
+Tests:       40 passed, 40 total
+Snapshots:   0 total
+Time:        3.423 s
+Ran all test suites.
+```
+
+### 📝 **Coverage**
+The tests include:
+- **Movies API** (`/movies`)
+  - ✅ Retrieve all movies (paginated, sorted, and filtered)
+  - ✅ Retrieve a movie by ID
+  - ✅ Create a new movie (with validation checks)
+  - ✅ Update a movie (validations & duplicate handling)
+  - ✅ Soft delete a movie
+
+- **Categories API** (`/categories`)
+  - ✅ Retrieve all categories (paginated, sorted, and filtered)
+  - ✅ Retrieve a category by ID
+  - ✅ Create a new category (validations & duplicate handling)
+  - ✅ Update a category
+  - ✅ Delete a category (checks for associated movies)
+
+### 📂 **Test Directory Structure**
+```
+/__tests__
+│── categoryRoutes.test.ts  # Tests for category endpoints
+│── movieRoutes.test.ts     # Tests for movie endpoints
+```
+
+---
+
 ## 🚀 Getting Started
 
 ### 1. Clone the Repository
